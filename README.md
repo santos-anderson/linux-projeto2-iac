@@ -1,46 +1,46 @@
-# Infraestrutura como Código (IaC) — Deploy de Aplicação Web
+# Infraestrutura como Código (IaC) — Provisionamento de Servidor Web Apache
 
 ## 📌 Descrição do Projeto
 
-Este projeto tem como objetivo automatizar a atualização de um servidor Linux e a implantação de uma aplicação web utilizando um script Bash.
+Este projeto tem como objetivo automatizar o provisionamento de um servidor web Apache2 e a implantação de uma aplicação web em um ambiente Linux Ubuntu, utilizando Shell Script (Bash).
 
-A solução segue os princípios de **Infraestrutura como Código (IaC)**, permitindo automatizar tarefas de configuração e implantação, reduzindo a necessidade de intervenções manuais.
+A solução aplica conceitos de **Infraestrutura como Código (IaC)**, permitindo configurar o ambiente e publicar a aplicação de forma automatizada, padronizada e reproduzível.
 
-O script realiza a atualização dos pacotes do sistema operacional, instala a ferramenta `unzip`, baixa os arquivos da aplicação diretamente de um repositório GitHub e copia os arquivos para o diretório padrão de publicação do servidor Apache.
+O script realiza a atualização do sistema operacional, instala o Apache2 e as dependências necessárias, baixa os arquivos da aplicação de um repositório GitHub e realiza sua publicação no diretório padrão do servidor web.
 
-## 🎯 Objetivo
+## 🎯 Objetivos
 
-Automatizar o processo de implantação de uma aplicação web em um servidor Linux Ubuntu, garantindo:
-
-- Padronização do processo de implantação.
-- Redução de erros operacionais.
-- Agilidade na disponibilização da aplicação.
-- Facilidade de manutenção e reprodução do ambiente.
-- Automatização de tarefas administrativas.
+- Automatizar a atualização dos pacotes do Ubuntu.
+- Instalar o servidor web Apache2.
+- Instalar as dependências necessárias para a implantação.
+- Realizar o download da aplicação hospedada no GitHub.
+- Extrair e copiar os arquivos para o diretório do Apache.
+- Reduzir tarefas manuais e erros de configuração.
+- Padronizar o processo de provisionamento e deploy.
 
 ## 🛠️ Tecnologias Utilizadas
 
 | Tecnologia | Finalidade |
 |---|---|
-| Linux Ubuntu | Sistema operacional do servidor |
-| Bash | Automação das tarefas |
-| Apache2 | Servidor web para hospedagem da aplicação |
+| Linux Ubuntu | Sistema operacional |
+| Bash | Automação de tarefas |
+| Apache2 | Servidor web |
 | APT | Gerenciamento de pacotes |
-| Wget | Download dos arquivos |
+| Wget | Download da aplicação |
 | Unzip | Extração de arquivos ZIP |
-| GitHub | Repositório da aplicação |
+| GitHub | Repositório do código-fonte |
 
 ## 📋 Pré-requisitos
 
-Antes de executar o script, é necessário:
+Para executar o projeto, é necessário:
 
-- Possuir um servidor Ubuntu com acesso à internet.
-- Ter permissões administrativas (`root` ou `sudo`).
-- Ter o Apache2 instalado e configurado.
-- Ter o `wget` instalado.
-- Garantir que o diretório `/var/www/html/` esteja disponível.
+- Servidor ou máquina virtual com Ubuntu.
+- Conexão com a internet.
+- Permissões administrativas (`root` ou `sudo`).
+- Utilitário `wget` instalado.
+- Porta TCP 80 liberada para acesso HTTP, caso necessário.
 
-**Observação:** o script não instala nem configura o Apache2. Esse serviço deve estar preparado antes da implantação.
+**Observação:** não é necessário instalar o Apache2 manualmente, pois o script realiza sua instalação automaticamente.
 
 ## 📂 Estrutura do Projeto
 
@@ -54,14 +54,13 @@ infraestrutura-como-codigo/
 
 ## 💻 Script de Automação
 
-O script utilizado para realizar o deploy da aplicação é:
-
 ```bash
 #!/bin/bash
 
 echo "Atualizando o servidor..."
 apt-get update
 apt-get upgrade -y
+apt-get install apache2 -y
 apt-get install unzip -y
 
 echo "Baixando e copiando os arquivos da aplicação..."
@@ -77,88 +76,132 @@ cp -R * /var/www/html/
 
 ## ⚙️ Funcionamento do Script
 
-**1. Atualização do servidor**
+### 1. Atualização do servidor
 
 ```bash
 apt-get update
 apt-get upgrade -y
 ```
 
-Atualiza a lista de pacotes disponíveis e instala as atualizações dos pacotes já existentes no sistema.
+Atualiza a lista de pacotes disponíveis nos repositórios e instala as atualizações dos pacotes existentes.
 
-**2. Instalação de dependências**
+### 2. Instalação do Apache2
+
+```bash
+apt-get install apache2 -y
+```
+
+Instala automaticamente o servidor web Apache2, responsável por disponibilizar a aplicação através do protocolo HTTP.
+
+O parâmetro `-y` confirma automaticamente as solicitações de instalação.
+
+### 3. Instalação do Unzip
 
 ```bash
 apt-get install unzip -y
 ```
 
-Instala o utilitário `unzip`, necessário para extrair os arquivos da aplicação.
+Instala a ferramenta necessária para descompactar o arquivo ZIP da aplicação.
 
-**3. Download da aplicação**
+### 4. Download da aplicação
 
 ```bash
 cd /tmp
 wget https://github.com/denilsonbonatti/linux-site-dio/archive/refs/heads/main.zip
 ```
 
-Acessa o diretório temporário do sistema e realiza o download da aplicação hospedada no GitHub.
+Acessa o diretório temporário do Linux e baixa os arquivos da aplicação diretamente do GitHub.
 
-**4. Extração dos arquivos**
+### 5. Extração dos arquivos
 
 ```bash
 unzip main.zip
 ```
 
-Extrai o conteúdo do arquivo ZIP para o diretório `linux-site-dio-main`.
+Descompacta os arquivos da aplicação, criando o diretório `linux-site-dio-main`.
 
-**5. Publicação da aplicação**
+### 6. Publicação no Apache
 
 ```bash
 cd linux-site-dio-main
 cp -R * /var/www/html/
 ```
 
-Copia os arquivos da aplicação para o diretório de publicação padrão do Apache.
+Copia os arquivos da aplicação para o diretório padrão de publicação do Apache2.
 
-## 🚀 Como Executar
+Após a cópia, o conteúdo estará disponível para ser servido pelo Apache, desde que o serviço esteja em execução.
 
-**Passo 1 — Criar o arquivo do script**
+## 🚀 Como Executar o Projeto
+
+### Passo 1 — Criar o script
 
 ```bash
 nano script-iac.sh
 ```
 
-Copie o conteúdo do script, salve e feche o editor.
+Insira o conteúdo do script e salve o arquivo.
 
-**Passo 2 — Conceder permissão de execução**
+### Passo 2 — Conceder permissão de execução
 
 ```bash
 chmod +x script-iac.sh
 ```
 
-**Passo 3 — Executar o script**
+### Passo 3 — Executar o script
 
 ```bash
 sudo ./script-iac.sh
 ```
 
-**Passo 4 — Validar a implantação**
+O processo realizará automaticamente a atualização do Ubuntu, instalação do Apache2 e Unzip, download e publicação da aplicação.
 
-Após a execução, verifique se os arquivos foram copiados:
+## 🔍 Validação da Instalação
 
-```bash
-ls -la /var/www/html/
-```
-
-Verifique também o status do Apache:
+Após a execução, verifique o status do Apache:
 
 ```bash
 sudo systemctl status apache2
 ```
 
+Para verificar se o serviço está ativo:
+
+```bash
+sudo systemctl is-active apache2
+```
+
+O retorno esperado é:
+
+```text
+active
+```
+
+Caso o Apache não esteja em execução, utilize:
+
+```bash
+sudo systemctl start apache2
+```
+
+Para configurar a inicialização automática do Apache:
+
+```bash
+sudo systemctl enable apache2
+```
+
+Verifique os arquivos publicados:
+
+```bash
+ls -la /var/www/html/
+```
+
 ## 🌐 Acessando a Aplicação
 
-Com o Apache em execução e a porta HTTP liberada, abra um navegador e acesse:
+Primeiro, descubra o endereço IP do servidor:
+
+```bash
+hostname -I
+```
+
+Em seguida, abra o navegador e acesse:
 
 ```text
 http://IP_DO_SERVIDOR
@@ -170,44 +213,56 @@ Exemplo:
 http://192.168.1.100
 ```
 
-A aplicação deverá ser exibida caso os arquivos tenham sido publicados corretamente.
+Se a instalação e a publicação ocorrerem corretamente, a aplicação web será exibida no navegador.
 
 ## 🔒 Boas Práticas e Melhorias Futuras
 
-Para tornar a automação mais robusta, recomenda-se:
+Para aumentar a confiabilidade da automação, recomenda-se:
 
-- Implementar tratamento de erros durante a execução.
-- Validar a disponibilidade dos diretórios antes da cópia.
-- Verificar se o Apache está instalado e em execução.
-- Utilizar diretórios temporários exclusivos para evitar conflitos.
-- Implementar logs para rastrear as etapas do deploy.
-- Validar os arquivos baixados antes da publicação.
-- Utilizar versões específicas da aplicação para garantir implantações reproduzíveis.
+- Adicionar tratamento de erros ao script.
+- Verificar se o `wget` está instalado antes do download.
+- Utilizar diretórios temporários exclusivos.
+- Evitar conflitos com arquivos existentes durante novas execuções.
+- Verificar se o serviço Apache está ativo após a instalação.
+- Implementar logs de execução.
+- Adicionar validações para confirmar o sucesso do download.
+- Fixar uma versão da aplicação para garantir implantações reproduzíveis.
+- Configurar HTTPS em ambientes de produção.
 
 ## 📊 Resultados Esperados
 
-Ao executar o script com sucesso, espera-se:
+Ao finalizar a execução do script, o ambiente deverá apresentar:
 
-- Servidor Ubuntu com pacotes atualizados.
-- Ferramenta `unzip` instalada.
-- Arquivos da aplicação baixados e extraídos.
-- Conteúdo publicado em `/var/www/html/`.
-- Aplicação acessível pelo navegador, desde que o Apache esteja configurado e em funcionamento.
+| Componente | Resultado esperado |
+|---|---|
+| Ubuntu | Pacotes atualizados |
+| Apache2 | Instalado |
+| Unzip | Instalado |
+| Aplicação | Baixada do GitHub |
+| Arquivos web | Copiados para `/var/www/html/` |
+| Servidor HTTP | Disponível se o Apache estiver ativo |
+| Acesso web | Via endereço IP do servidor |
 
-## 📚 Conceito de Infraestrutura como Código
+## 📚 Infraestrutura como Código (IaC)
 
-Infraestrutura como Código (IaC) é uma prática que permite automatizar a configuração e o gerenciamento de infraestrutura por meio de arquivos de código.
+Infraestrutura como Código é uma abordagem que permite automatizar o provisionamento, a configuração e o gerenciamento de ambientes de infraestrutura utilizando arquivos de código.
 
-Neste projeto, o Bash é utilizado para automatizar atividades de preparação do servidor e implantação da aplicação, demonstrando uma abordagem inicial de automação de infraestrutura.
+Neste projeto, o Shell Script é utilizado para executar automaticamente as tarefas de preparação de um servidor Linux e implantação de uma aplicação web.
 
-Entre os benefícios estão a padronização, a redução de tarefas manuais e a possibilidade de versionar os procedimentos utilizados.
+**Principais benefícios:**
+
+- **Automação:** reduz a necessidade de executar comandos manualmente.
+- **Padronização:** permite repetir o mesmo procedimento em diferentes servidores.
+- **Agilidade:** diminui o tempo de preparação do ambiente.
+- **Versionamento:** permite armazenar e controlar alterações no GitHub.
+- **Manutenção:** facilita a evolução e a documentação do processo.
 
 ## 📌 Referências
 
 - [Repositório da aplicação — GitHub](https://github.com/denilsonbonatti/linux-site-dio)
-- [Documentação Ubuntu](https://ubuntu.com/)
-- [Documentação Apache HTTP Server](https://httpd.apache.org/)
+- [Documentação oficial do Ubuntu](https://ubuntu.com/)
+- [Documentação do Apache HTTP Server](https://httpd.apache.org/)
 
 ---
 
-**Projeto desenvolvido para estudos de Linux, Shell Script, automação e Infraestrutura como Código (IaC).**
+**Projeto desenvolvido para estudos de Linux, Shell Script, Apache2, automação de servidores e Infraestrutura como Código (IaC).**
